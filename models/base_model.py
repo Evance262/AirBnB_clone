@@ -1,24 +1,36 @@
 #!/usr/bin/python3
+"""BaseModel class"""
+
+from uuid import uuid4
+from datetime import datetime
+from models import storage
 
 
-class User:
-
+class BaseModel:
+    """Base object for all common attributes:
+    attr1: id 
+    attr: created_at
+    attr3: updated_at
+    """
 
     def __init__(self,*args, **kwargs):
-        self.user_id = user_id
-        self.username = username
-        self.email = email
-        self.created_on = created_on
+        """Initializes instance"""
+        self.id = str(uuid4())
+        self.created_at = created_at
+        self.updated_at = updated_at
 
-    @property
-    def email(self):
-        return '{}.{}@gmail.com'.format(user_id, username)
+    def __str__(self):
+        """ prints the str rep of [<class name>] (<self.id>) <self.__dict__>"""
+        return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
+                                     self.__dict__)
 
-    @property
-    def fullName(self):
-        return '{} {}'.format(user_id, username)
+    def save(self):
+        """Updated public instance"""
+        self.updated_at = datetime.now()
+        storage.new(self)
+        storage.save()
 
-    @property
-    def created_on(self):
-        pass
+    def to_dict(self):
+        """Returns a dictionary"""
+        return new_dict
 
