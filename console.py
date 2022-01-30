@@ -1,29 +1,45 @@
 #!/usr/bin/python3
+''' Module that supports the console behavior
+'''
 import cmd
-import string, sys
-import os
+import string
+import sys
+from models import storage
+from models.engine.file_storage import FileStorage
+from models.base_model import BaseModel
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from models.user import User
+from itertools import count
 
-class HbnbConsole(cmd.Cmd):
-    intro = "-------------------------------------\n|\
-    Welcome to the HBnB console    |\n|\
-    for help, input 'help'         |\n|\
-    for quit, input 'quit'         |\n-------------------------------------\n"
 
-
-    def __init__(self):
-        cmd.Cmd.__init__(self)
-        self.prompt = '(hbnb)'
-
-    # my_class = {"BaseModel": BaseModel, "Amenity": Amenity,
-    #             "City": City, "Place": Place, "Review": Review,
-    #             "User": User, "State": State}
-    
+class HBNBCommand(cmd.Cmd):
+    prompt = '(hbnb) '
+    my_class = {"BaseModel": BaseModel, "Amenity": Amenity,
+                "City": City, "Place": Place, "Review": Review,
+                "User": User, "State": State}
     file = None
-    last_output = ''
 
-    
+    def do_quit(self, arg):
+        "Quit command to exit the program"
+        sys.exit(1)
+
+    def do_EOF(self, arg):
+        "Quit command to exit the program"
+        sys.exit(1)
+
+    def emptyline(self):
+        """Ignores empty spaces"""
+        pass
+
     def do_create(self, arg):
-        """Created an object parsed from the console: create"""
+        """
+        Creates a new instance of BaseModel
+        and saves it to JSON file
+        """
         if arg == "":
             print("** class name missing **")
             return
@@ -33,8 +49,65 @@ class HbnbConsole(cmd.Cmd):
             new_instance.save()
             print(new_instance.id)
         except NameError:
-            print("** class doen't exist **")
+            print("** class doesn't exist **")
             return
+
+    def do_show(self, arg):
+        """
+        Prints the string representation of an instance
+        based on the class name and id
+        """
+        if arg == "":
+            print("** class name missing **")
+            return
+        arg_list = arg.split()
+        try:
+            list_arg = eval(arg_list[0])()
+        except Exception:
+            print("** class doesn't exist **")
+            return
+        if len(arg_list) == 1:
+            print("** instance id missing **")
+            return
+        instance = 0
+        for key, value in storage.all().items():
+            if key == "{}.{}".format(arg_list[0], arg_list[1]):
+                print(value)
+                instance = 1
+        if instance == 0:
+            print("** no instance found **")
+
+    def do_destroy(self, arg):
+        """ Delete a class instance of a given id."""
+        list_arg = arg.split()
+        obj_dict = storage.all()
+        if len(list_arg) == 0:
+            print("** class name missing **")
+        elif list_arg[0] not in HBNBCommand.my_class:
+            print("** class doesn't exist **")
+        elif len(list_arg) == 1:
+            print("** instance id missing **")
+        elif "{}.{}".format(list_arg[0], list_arg[1]) not in obj_dict.keys():
+            print("** no instance found **")
+        else:
+            del obj_dict["{}.{}".format(list_arg[0], list_arg[1])]
+            storage.save()
+
+    def do_all(self, arg):
+        """ Prints all string representation of all instances
+         based or not on the class name.
+         Ex: $ all BaseModel or $ all."""
+        list_arg = arg.split()
+        if len(list_arg) > 0 and list_arg[0] not in HBNBCommand.my_class:
+            print("** class doesn't exist **")
+        else:
+            obj_list = []
+            for obj in storage.all().values():
+                if len(list_arg) > 0 and list_arg[0] == obj.__class__.__name__:
+                    obj_list.append(obj.__str__())
+                elif len(list_arg) == 0:
+                    obj_list.append(obj.__str__())
+            print(obj_list)
 
     def do_update(self, arg):
         """Usage: update <class> <id> <attribute_name> <attribute_value> or
@@ -48,7 +121,7 @@ class HbnbConsole(cmd.Cmd):
         if len(list_arg) == 0:
             print("** class name missing **")
             return False
-        if list_arg[0] not in HbnbConsole.my_class:
+        if list_arg[0] not in HBNBCommand.my_class:
             print("** class doesn't exist **")
             return False
         if len(list_arg) == 1:
@@ -85,79 +158,62 @@ class HbnbConsole(cmd.Cmd):
                     obj.__dict__[k] = v
         storage.save()
 
-    def do_destroy(self, arg):
-        """Destroys an object of a given uuid"""
+    def do_count(self, arg):
+        """Usage: count <class> or <class>.count()
+        Retrieve the number of instances of a given class."""
         list_arg = arg.split()
-        obj_dict = storage.all()
-        if len(list_arg) == 0:
-            print("** class name missing **")
-        elif list_arg[0] not in HbnbConsole.my_class:
-            print("** Invalid class **")
-        elif len(list_arg) == 1:
-            print("** instance id missing **")
-        elif "{}.{}".format(list_arg[0], list_arg[1] not in obj_dict.keys()):
-            print("** instance not found **")
+        c = 0
+        for obj in storage.all().values():
+            if (list_arg[0] == obj.__class__.__name__):
+                c += 1
+        print(c)
+
+    def point_all(self, arg):
+        list_arg = arg.split(".")
+        if "()" in arg and len(list_arg) == 2:
+            string = list_arg[1].split("(")[0] + " " + list_arg[0]
+            return string
         else:
-            del obj_dict["{}.{}".format(list_arg[0], list_arg[1])]
-            storage.save()
-        
-    def do_show(self, arg):
-        """
-        Prints the string representation of an instance
-        based on the class name and id
-        """
-        if arg == "":
-            print("** class name missing **")
-            return
-        arg_list = arg.split()
-        try:
-            list_arg = eval(arg_list[0])()
-        except Exception:
-            print("** class doesn't exist **")
-            return
-        if len(arg_list) == 1:
-            print("** instance id missing **")
-            return
-        instance = 0
-        for key, value in storage.all().items():
-            if key == "{}.{}".format(arg_list[0], arg_list[1]):
-                print(value)
-                instance = 1
-        if instance == 0:
-            print("** no instance found **")
+            return arg
 
-    def do_destroy(self, arg):
-        """ Delete a class instance of a given id."""
-        list_arg = arg.split()
-        obj_dict = storage.all()
-        if len(list_arg) == 0:
-            print("** class name missing **")
-        elif list_arg[0] not in HbnbConsole.my_class:
-            print("** class doesn't exist **")
-        elif len(list_arg) == 1:
-            print("** instance id missing **")
-        elif "{}.{}".format(list_arg[0], list_arg[1]) not in obj_dict.keys():
-            print("** no instance found **")
+    def point_count(self, arg):
+        list_arg = arg.split(".")
+        if "()" in arg and len(list_arg) == 2:
+            string = list_arg[1].split("(")[0] + " " + list_arg[0]
+            return string
         else:
-            del obj_dict["{}.{}".format(list_arg[0], list_arg[1])]
-            storage.save()
+            return arg
 
-    def do_shell(self, line):
-        "Runs shell commands"
-        output = os.popen(line).read()
-        print(output)
-        self.last_output = output
-    
-    def do_EOF(self, line):
-        """Processes the end of file: EOF"""
-        sys.exit(1)
+    def point_show(self, arg):
+        list_arg = arg.split(".")
+        if "(" and ")" in arg and len(list_arg) == 2:
+            new = list_arg[1].split("(\"")
+            new[1] = new[1].split("\")")[0]
+            string = new[0] + " " + list_arg[0] + " " + new[1]
+            return string
+        else:
+            return arg
 
-    def do_quit(self, arg):
-        """Stops the console and closes the terminal window, and exit: quit"""
-        print("Process terimnated")
-        self.exit(1)
+    def point_destroy(self, arg):
+        list_arg = arg.split(".")
+        if "(" and ")" in arg and len(list_arg) == 2:
+            new = list_arg[1].split("(\"")
+            new[1] = new[1].split("\")")[0]
+            string = new[0] + " " + list_arg[0] + " " + new[1]
+            return string
+        else:
+            return arg
+
+    def precmd(self, arg):
+        x = self.point_all(arg)
+        if(x == arg):
+            x = self.point_count(arg)
+        if(x == arg):
+            x = self.point_show(arg)
+        if(x == arg):
+            x = self.point_destroy(arg)
+        return x
 
 
-
-if __name__=='__main__':
-    HbnbConsole().cmdloop()
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
