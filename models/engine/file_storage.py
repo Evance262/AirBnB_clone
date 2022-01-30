@@ -3,9 +3,9 @@ from datetime import datetime
 from models.base_model import BaseModel
 from models.state import State
 from models.city import City
-# from models.amenity import Amenity
+from models.amenity import Amenity
 from models.place import Place
-# from models.review import Review
+from models.review import Review
 from models.user import User
 import json
 import os
@@ -40,7 +40,7 @@ class FileStorage:
     def reload(self):
         """reload from JSON"""
         my_class = {"BaseModel": BaseModel,
-                    "City": City, "Place": Place,
+                    "City": City, "Place": Place, "Amenity": Amenity,
                     "User": User, "State": State}
         dict_to_fill = {}
         if(os.stat(self.__file_path).st_size != 0):
