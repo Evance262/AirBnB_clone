@@ -8,4 +8,4 @@ class User(BaseModel):
     email = ""
     password = ""
     first_name = ""
-    lasr_name = ""
+    last_name = ""
