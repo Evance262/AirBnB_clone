@@ -32,7 +32,7 @@ class FileStorage:
         for key, value in self.__objects.items():
             dict[key] = value.to_dict()
         with open(self.__file_path, mode="w") as my_file:
-            json.dumb(dict, my_file)
+            json.dump(dict, my_file)
 
     def reload(self):
         """
@@ -40,7 +40,7 @@ class FileStorage:
         (only if the __file_path exists)
         """
         my_class = {"BaseModel": BaseModel,
-                    "City": City, "Place": Place, "Review": Review,
+                    "City": City, "Place": Place,
                     "User": User, "State": State}
         dic_to_fill = {}
         if(os.stat(self.__file_path).st_size != 0):
