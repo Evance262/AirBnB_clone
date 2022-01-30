@@ -20,7 +20,7 @@ class BaseModel:
         self.updated_at = datetime.now()
         if kwargs:
             if kwargs is not None:
-                for key, value in kwargs.item():
+                for key, value in kwargs.items():
                     if (key == "created_at" or key == "updated_at"):
                         if (type(value) == str):
                             new_object = datetime.strptime(
