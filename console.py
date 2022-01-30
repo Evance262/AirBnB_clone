@@ -14,9 +14,9 @@ class HbnbConsole(cmd.Cmd):
         cmd.Cmd.__init__(self)
         self.prompt = '(hbnb)'
 
-    my_class = {"BaseModel": BaseModel, "Amenity": Amenity,
-                "City": City, "Place": Place, "Review": Review,
-                "User": User, "State": State}
+    # my_class = {"BaseModel": BaseModel, "Amenity": Amenity,
+    #             "City": City, "Place": Place, "Review": Review,
+    #             "User": User, "State": State}
     
     file = None
     last_output = ''
