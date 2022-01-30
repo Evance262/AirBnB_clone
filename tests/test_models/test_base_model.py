@@ -6,6 +6,8 @@ import inspect
 import datetime
 import os
 from models.base_model import BaseModel
+
+
 class TestBaseModel(unittest.TestCase):
 
     def test_id(self):
