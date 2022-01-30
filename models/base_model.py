@@ -1,19 +1,18 @@
 #!/usr/bin/python3
 """BaseModel class"""
 
+
 from uuid import uuid4
 from datetime import datetime
 
 
-
 class BaseModel:
     """Base object for all common attributes:
-    attr1: id 
+    attr1: id
     attr: created_at
-    attr3: updated_at
-    """
+    attr3: updated_at"""
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Initializes instance attributes"""
         self.id = str(uuid4())
         self.created_at = datetime.now()
@@ -35,15 +34,16 @@ class BaseModel:
         return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
                                      self.__dict__)
 
-
     def save(self):
-        """Updated public instance attribute updated_at with the current datetime"""
+        """Updated public instance attribute
+        updated_at with the current datetime"""
         from models import storage
         self.updated_at = datetime.now()
         storage.save()
 
     def to_dict(self):
-        """Returns a dictionary containing all keys/values of __dict__ of the instance"""
+        """Returns a dictionary containing all
+        keys/values of __dict__ of the instance"""
         updated_dict = self.__dict__.copy()
         updated_dict['__class__'] = self.__class__.__name__
         updated_dict['created_at'] = self.created_at.strftime(
