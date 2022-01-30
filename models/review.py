@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-'''Module for State class'''
 from models.base_model import BaseModel
 
 
-class City(BaseModel):
+class Review(BaseModel):
     """Inherits from BaseModel"""
-    state_id = ""
-    name = ""
+    place_id = ""
+    user_id = ""
+    text = ""

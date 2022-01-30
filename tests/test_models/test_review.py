@@ -6,7 +6,7 @@ import pep8
 import inspect
 import datetime
 import os
-from models.place import Place
+from models.review import Review
 
 
 class TestCodeFormat(unittest.TestCase):
@@ -20,33 +20,45 @@ class TestCodeFormat(unittest.TestCase):
 
     def setUp(self):
         """Sets Model to get tested"""
-        self.base = Place()
+        self.base = Review()
 
     def tearDown(self):
         """removes file"""
-        self.base = Place()
+        self.base = Review()
 
     def object_Instance(self):
         """ tests Instance Creation"""
-        self.assertIsInstance(self.place, BaseModel)
+        self.assertIsInstance(self.review, BaseModel)
 
     def created_at_test(self):
         """created_at testing"""
-        base = Place()
+        base = Review()
         self.assertEqual(type(base.created_at), type(datetime.now()))
         self.assertTrue(hasattr(base, "created_at"))
 
     def updated_at_test(self):
         """updated testing"""
-        base = Place()
+        base = Review()
         self.assertEqual(type(base.updated_at), type(datetime.now()))
         self.assertTrue(hasattr(base, "update_at"))
 
-    def test_name(self):
-        '''Test Email'''
-        base = Place()
-        self.assertEqual(type(base.name), str)
-        self.assertTrue(hasattr(base, "name"))
+    def test_user_id(self):
+        '''Test user'''
+        base = Review()
+        self.assertEqual(type(base.user_id), str)
+        self.assertTrue(hasattr(base, "user_id"))
+
+    def test_place_id(self):
+        '''Test place'''
+        base = Review()
+        self.assertEqual(type(base.place_id), str)
+        self.assertTrue(hasattr(base, "place_id"))
+
+    def test_text(self):
+        '''Test text'''
+        base = Review()
+        self.assertEqual(type(base.text), str)
+        self.assertTrue(hasattr(base, "text"))
 
 
 if __name__ == '__main__':
