@@ -10,13 +10,6 @@ from models.base_model import BaseModel
 
 class TestBaseModel(unittest.TestCase):
 
-    # def test_pep8_conformance(self):
-    #     """Comforming tests with pep8"""
-    #     pep8style  = pep8.StyleGuide(quite=True)
-    #     result = pep8style.check_files(['models/base_model.py'])
-    #     self.assertEqual(result.total_errors, 0,
-    #                     "Found code style errors (and warnings).")
-
     def test_id(self):
         new = BaseModel()
         self.assertEqual(type(new.id), str)
@@ -28,8 +21,7 @@ class TestBaseModel(unittest.TestCase):
 
     def test_updated_at(self):
         new = BaseModel()
-        self.assertEqual(type(new.updated_at),
-                            datetime.datetime)
+        self.assertEqual(type(new.updated_at), datetime.datetime)
 
     def test_str(self):
         new = BaseModel()
